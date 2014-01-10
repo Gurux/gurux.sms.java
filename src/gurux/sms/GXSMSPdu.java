@@ -32,6 +32,9 @@
 
 package gurux.sms;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 class GXSMSPdu
 {
     private static String CodeInteger(int value)
@@ -744,7 +747,7 @@ class GXSMSPdu
             index += 2;
             int timezone = getInteger(data, index);
             index += 2;
-            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            java.util.Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             calendar.set(year, month, day, hour, minute, second);            
             msg.setTime(calendar.getTime());          
         }
