@@ -64,6 +64,7 @@ final class GXSMSPdu {
      *            Integer value.
      * @return Value as coded string.
      */
+    // CHECKSTYLE:OFF
     private static String codeInteger(final int value) {
         char[] tmp = new char[2];
         int b = ((byte) (value >> 4));
@@ -72,6 +73,7 @@ final class GXSMSPdu {
         tmp[1] = (char) (b > 9 ? b + 0x37 : b + 0x30);
         return new String(tmp);
     }
+    // CHECKSTYLE:ON
 
     /**
      * Code string.
@@ -96,6 +98,7 @@ final class GXSMSPdu {
      *            Character to convert.
      * @return ASCII char as 7 bit.
      */
+    // CHECKSTYLE:OFF
     private static int asciiToSMS(final int ch) {
         int value;
         switch (ch) {
@@ -261,6 +264,7 @@ final class GXSMSPdu {
         return value;
     }
 
+    // CHECKSTYLE:ON
     /**
      * Convert 8 bits data to the 7 bits data.
      * 
@@ -268,6 +272,7 @@ final class GXSMSPdu {
      *            Coded data.
      * @return Coded PDU.
      */
+    // CHECKSTYLE:OFF
     private static String code7Bit(final String data) {
         if (data == null || data.equals("")) {
             return "";
@@ -304,6 +309,7 @@ final class GXSMSPdu {
         }
         return output;
     }
+    // CHECKSTYLE:ON
 
     /**
      * Code 8 bit string to SMS string.
@@ -330,6 +336,7 @@ final class GXSMSPdu {
      *            String to convert.
      * @return UNICODE string.
      */
+    // CHECKSTYLE:OFF
     private static String codeUnicode(final String data) {
         if (data == null || data.equals("")) {
             return "";
@@ -343,6 +350,7 @@ final class GXSMSPdu {
         }
         return sb.toString();
     }
+    // CHECKSTYLE:ON
 
     /**
      * Get integer as a Word.
@@ -353,6 +361,7 @@ final class GXSMSPdu {
      *            Character index.
      * @return Encoded integer value.
      */
+    // CHECKSTYLE:OFF
     private static int getInteger(final String data, final int index) {
         if (data.length() < 2) {
             throw new IllegalArgumentException("Invalid data");
@@ -365,6 +374,7 @@ final class GXSMSPdu {
                 : (c - '0')) & 0xF;
         return value;
     }
+    // CHECKSTYLE:ON
 
     /**
      * Get encoded string.
@@ -406,7 +416,8 @@ final class GXSMSPdu {
      *            Code type.
      * @return Coded SMS message.
      */
-    public static String Code(final String receiver, final String message,
+    // CHECKSTYLE:OFF
+    public static String code(final String receiver, final String message,
             final MessageCodeType type) {
         String receiver2 = receiver;
         if (receiver2 == null || receiver2.equals("")) {
@@ -441,7 +452,11 @@ final class GXSMSPdu {
         data += codeInteger(receiver2.length());
         // Type-of-Address. (91 indicates international format of the phone
         // number).
-        data += codeInteger(bInternational ? 0x91 : 0x81);
+        if (bInternational) {
+            data += codeInteger(0x91);
+        } else {
+            data += codeInteger(0x81);
+        }
         // The phone number in semi OCTETS.
         data += codeString(receiver2);
         // TP-PID. Protocol identifier
@@ -477,6 +492,7 @@ final class GXSMSPdu {
         data += msg;
         return data;
     }
+    // CHECKSTYLE:ON
 
     /**
      * Convert SMS char to UNICODE char.
@@ -487,6 +503,7 @@ final class GXSMSPdu {
      *            is ESCCH character.
      * @return Coded character.
      */
+    // CHECKSTYLE:OFF
     private static int smsToASCII(final int value, final boolean[] escch) {
         int ch = value;
         if (escch[0]) {
@@ -661,6 +678,7 @@ final class GXSMSPdu {
         }
         return ch;
     }
+    // CHECKSTYLE:ON
 
     /**
      * Convert 7 bits data to the 8 bits data.
@@ -669,6 +687,7 @@ final class GXSMSPdu {
      *            7 bit data.
      * @return Coded string.
      */
+    // CHECKSTYLE:OFF
     private static String decode7Bit(final String data) {
         int[] bytes = new int[data.length() / 2];
         // Convert data to the byte array.
@@ -712,6 +731,7 @@ final class GXSMSPdu {
         }
         return sb.toString();
     }
+    // CHECKSTYLE:ON
 
     /**
      * Convert hex string to string data.
@@ -735,6 +755,7 @@ final class GXSMSPdu {
      *            UNICODE string.
      * @return Decoded string.
      */
+    // CHECKSTYLE:OFF
     private static String decodeUnicode(final String data) {
         StringBuilder sb = new StringBuilder();
         for (int pos = 0; pos != data.length(); pos += 4) {
@@ -744,6 +765,7 @@ final class GXSMSPdu {
         }
         return sb.toString();
     }
+    // CHECKSTYLE:ON
 
     /**
      * Encode string to SMS message.
@@ -753,6 +775,7 @@ final class GXSMSPdu {
      * @param msg
      *            SMS message where data is filled.
      */
+    // CHECKSTYLE:OFF
     static void encode(final String data, final GXSMSMessage msg) {
         if (data.length() < 1) {
             throw new IllegalArgumentException("Invalid data.");
@@ -853,4 +876,5 @@ final class GXSMSPdu {
             throw new IllegalArgumentException("Invalid data coding scheme");
         }
     }
+    // CHECKSTYLE:ON
 }

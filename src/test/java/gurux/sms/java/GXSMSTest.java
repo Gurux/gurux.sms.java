@@ -1,4 +1,4 @@
-package gurux.sms;
+package gurux.sms.java;
 
 import gurux.sms.GXSMS;
 import junit.framework.Test;
@@ -10,12 +10,12 @@ import junit.framework.TestSuite;
  */
 public class GXSMSTest extends TestCase {
     /**
-     * Create the test case
+     * Create the test case.
      *
      * @param testName
-     *            name of the test case
+     *            Name of the test case.
      */
-    public GXSMSTest(String testName) {
+    public GXSMSTest(final String testName) {
         super(testName);
     }
 
@@ -29,7 +29,7 @@ public class GXSMSTest extends TestCase {
     /**
      * Test native library load.
      */
-    public void testNativeLibrary() {
+    public final void testNativeLibrary() {
         GXSMS.getPortNames();
     }
 }

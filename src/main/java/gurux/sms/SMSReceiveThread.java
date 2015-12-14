@@ -53,7 +53,7 @@ class SMSReceiveThread extends Thread {
      * @param parent
      *            Parent component.
      */
-    public SMSReceiveThread(final GXSMS parent) {
+    SMSReceiveThread(final GXSMS parent) {
         parentMedia = parent;
     }
 
@@ -75,7 +75,9 @@ class SMSReceiveThread extends Thread {
                         }
                     }
                 }
+                // CHECKSTYLE:OFF
                 Thread.sleep(parentMedia.getSMSCheckInterval() * 1000);
+                // CHECKSTYLE:ON
             } while (!Thread.currentThread().isInterrupted());
         } catch (RuntimeException ex) {
             parentMedia.notifyError(ex);

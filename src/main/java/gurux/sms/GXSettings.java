@@ -183,7 +183,7 @@ class GXSettings extends javax.swing.JDialog implements ActionListener {
      * @param comp
      *            Media component where settings are get and set.
      */
-    public GXSettings(final java.awt.Frame parent, final boolean modal,
+    GXSettings(final java.awt.Frame parent, final boolean modal,
             final GXSMS comp) {
         super(parent, modal);
         super.setLocationRelativeTo(parent);
@@ -193,7 +193,9 @@ class GXSettings extends javax.swing.JDialog implements ActionListener {
         portCB.setModel(new DefaultComboBoxModel<String>(ports));
         int[] rates = GXSMS.getAvailableBaudRates(null);
         baudRate.setModel(new DefaultComboBoxModel<String>(getStrings(rates)));
+        // CHECKSTYLE:OFF
         int[] dataBits = new int[] { 7, 8 };
+        // CHECKSTYLE:ON
         dataBitsCB.setModel(
                 new DefaultComboBoxModel<String>(getStrings(dataBits)));
         String[] parity =
@@ -292,6 +294,7 @@ class GXSettings extends javax.swing.JDialog implements ActionListener {
     /**
      * Initialize components.
      */
+    // CHECKSTYLE:OFF
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -731,6 +734,7 @@ class GXSettings extends javax.swing.JDialog implements ActionListener {
 
         pack();
     }
+    // CHECKSTYLE:ON
 
     @Override
     protected JRootPane createRootPane() {

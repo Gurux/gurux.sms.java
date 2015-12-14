@@ -285,7 +285,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      *            Operating system name.
      * @return True if Windows.
      */
-    static boolean isWindows(String os) {
+    static boolean isWindows(final String os) {
         return (os.indexOf("win") >= 0);
     }
 
@@ -296,7 +296,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      *            Operating system name.
      * @return True if Mac.
      */
-    static boolean isMac(String os) {
+    static boolean isMac(final String os) {
         return (os.indexOf("mac") >= 0);
     }
 
@@ -307,7 +307,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      *            Operating system name.
      * @return True if Unix.
      */
-    static boolean isUnix(String os) {
+    static boolean isUnix(final String os) {
         return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0
                 || os.indexOf("aix") >= 0);
     }
@@ -319,7 +319,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      *            Operating system name.
      * @return True if Solaris.
      */
-    static boolean isSolaris(String os) {
+    static boolean isSolaris(final String os) {
         return (os.indexOf("sunos") >= 0);
     }
 
@@ -638,7 +638,9 @@ public class GXSMS implements IGXMedia, AutoCloseable {
             setRtsEnable(true);
             setDtrEnable(true);
             receiver.start();
+            // CHECKSTYLE:OFF
             Thread.sleep(100);
+            // CHECKSTYLE:ON
             try {
                 // Send AT
                 synchronized (baseLock) {
@@ -770,6 +772,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      */
     private String sendCommand(final String cmd, final String eop,
             final boolean throwError) {
+        final int expectedMinimumByteCount = 5;
         ReceiveParameters<String> p =
                 new ReceiveParameters<String>(String.class);
         p.setWaitTime(commadWaitTime);
@@ -813,7 +816,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
             }
             if (eop != null) {
                 index = reply.lastIndexOf(eop);
-            } else if (reply.length() > 5) {
+            } else if (reply.length() > expectedMinimumByteCount) {
                 index = reply.lastIndexOf("\r\nOK\r\n");
                 if (index == -1) {
                     index = reply.lastIndexOf("ERROR:");
@@ -1347,9 +1350,11 @@ public class GXSMS implements IGXMedia, AutoCloseable {
         receiver2 = receiver2.replace(" ", "").replace("-", "").replace("(", "")
                 .replace(")", "").trim();
         // Send EOF
+        // CHECKSTYLE:OFF
         sendBytes(new byte[] { 26 });
+        // CHECKSTYLE:ON
         // Code PDU.
-        String data = GXSMSPdu.Code(target, message, type);
+        String data = GXSMSPdu.code(target, message, type);
         long len = (data.length() / 2) - 1;
         String cmd;
         // Save SMS before send.
@@ -1358,13 +1363,17 @@ public class GXSMS implements IGXMedia, AutoCloseable {
         } else {
             cmd = String.format("AT+CMGS=%1$s\r", len);
         }
+        // CHECKSTYLE:OFF
         String reply =
                 sendCommand(cmd, new String(new char[] { (char) 0x20 }), false);
+        // CHECKSTYLE:ON
         if (!reply.equals(">")) {
             throw new RuntimeException("Short message send failed.");
         }
         reply = sendCommand(data, "", false);
+        // CHECKSTYLE:OFF
         reply = sendCommand(new String(new char[] { 26 }), false);
+        // CHECKSTYLE:ON
         if (!reply.startsWith("+CMGW:")) {
             throw new RuntimeException(
                     "Short message send failed.\r\n" + getError(reply));
@@ -1610,6 +1619,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      * @return Collection of SMS messages from the device.
      */
     public final GXSMSMessage[] read() {
+        final String expectedReply = "+CMGR:";
         GXSMSMemoryInfo info = getMemoryCapacity();
         // If there are no messages to read.
         if (info.getCount() == 0) {
@@ -1621,8 +1631,9 @@ public class GXSMS implements IGXMedia, AutoCloseable {
             for (int pos = 1; pos != info.getMaximum() + 1; ++pos) {
                 String reply = sendCommand(String.format("AT+CMGR=%1$s\r", pos),
                         false);
-                if (reply.startsWith("+CMGR:")) {
-                    reply = reply.substring(0, 0) + reply.substring(0 + 6);
+                if (reply.startsWith(expectedReply)) {
+                    reply = reply.substring(0, 0)
+                            + reply.substring(0 + expectedReply.length());
                     String[] tmp = reply.split("[,]", -1);
                     GXSMSMessage msg = new GXSMSMessage();
                     msg.setIndex(pos);
@@ -1671,6 +1682,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      * @return SMS memory info class where information is filled.
      */
     public final GXSMSMemoryInfo getMemoryCapacity() {
+        final int expectedArraySize = 9;
         synchronized (baseLock) {
             String reply = sendCommand("AT+CPMS?\r", false);
             // for read/delete", "for write/send" , "for receive
@@ -1685,7 +1697,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
                 throw new RuntimeException("ReadSMSCapacity failed.");
             }
             String[] results = reply.split(",");
-            if (results.length != 9) {
+            if (results.length != expectedArraySize) {
                 throw new RuntimeException("ReadSMSCapacity failed.");
             }
             GXSMSMemoryInfo info = new GXSMSMemoryInfo();
@@ -1717,9 +1729,11 @@ public class GXSMS implements IGXMedia, AutoCloseable {
                 throw new RuntimeException("GetNetworkState failed.");
             }
             String[] results = reply.split(",|:");
+            // CHECKSTYLE:OFF
             if (results.length != 3) {
                 throw new RuntimeException("GetSignalQuality failed.");
             }
+            // CHECKSTYLE:ON
             return NetworkState.forValue(Integer.parseInt(results[2]));
         }
     }
@@ -1731,6 +1745,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      * @return Signal quality information.
      */
     public final GXSMSSignalQualityInfo getSignalQuality() {
+        final int expectedArraySize = 3;
         GXSMSSignalQualityInfo info = new GXSMSSignalQualityInfo();
         synchronized (baseLock) {
             // If modem don't support this.
@@ -1749,7 +1764,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
                 throw new RuntimeException("GetSignalQuality failed.");
             }
             String[] results = reply.split(",|:");
-            if (results.length != 3) {
+            if (results.length != expectedArraySize) {
                 throw new RuntimeException("GetSignalQuality failed.");
             }
             info.setRssi(Integer.parseInt(results[1].trim()));
@@ -1765,6 +1780,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      *         are filled. Null is returned if
      */
     public final GXSMSBatteryInfo getBatteryCharge() {
+        final int expectedArraySize = 4;
         GXSMSBatteryInfo info = new GXSMSBatteryInfo();
         synchronized (baseLock) {
             // If modem don't support this.
@@ -1782,11 +1798,13 @@ public class GXSMS implements IGXMedia, AutoCloseable {
                 throw new RuntimeException("GetBatteryCharge failed.");
             }
             String[] results = reply.split(",|:");
-            if (results.length != 4) {
+            if (results.length != expectedArraySize) {
                 throw new RuntimeException("GetBatteryCharge failed.");
             }
+            // CHECKSTYLE:OFF
             info.setBatteryCapacity(Integer.parseInt(results[2]));
             info.setAveragePowerConsumption(Integer.parseInt(results[3]));
+            // CHECKSTYLE:ON
         }
         return info;
     }
@@ -1797,6 +1815,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
      * @return String array of modem settings.
      */
     public final String[] getInfo() {
+        final int expectedMinimumSize = 5;
         java.util.ArrayList<String> info = new java.util.ArrayList<String>();
         synchronized (baseLock) {
             // Get manufacturer.
@@ -1822,7 +1841,8 @@ public class GXSMS implements IGXMedia, AutoCloseable {
             reply = sendCommand("AT+IPR?\r", false);
             int pos = reply.indexOf("+IPR:");
             if (pos != -1) {
-                info.add("Serial port speed: " + reply.substring(pos + 5));
+                info.add("Serial port speed: "
+                        + reply.substring(pos + expectedMinimumSize));
             }
         }
         return info.toArray(new String[info.size()]);
