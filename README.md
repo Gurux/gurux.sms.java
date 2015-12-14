@@ -2,7 +2,7 @@ See An [Gurux](http://www.gurux.org/ "Gurux") for an overview.
 
 Join the Gurux Community or follow [@Gurux](https://twitter.com/guruxorg "@Gurux") for project updates.
 
-Open Source GXSerial media component, made by Gurux Ltd, is a part of GXMedias set of media components, which programming interfaces help you implement communication by chosen connection type. Our media components also support the following connection types: network.
+Open Source GXSMS media component, made by Gurux Ltd, is a part of GXMedias set of media components, which programming interfaces help you implement communication by chosen connection type. Our media components also support the following connection types: network.
 
 For more info check out [Gurux](http://www.gurux.org/ "Gurux").
 
@@ -13,12 +13,13 @@ We are updating documentation on Gurux web page.
 If you have problems you can ask your questions in Gurux [Forum](http://www.gurux.org/forum).
 
 You can get source codes from http://www.github.com/gurux or if you use Maven add this to your POM-file:
-
+```java
 <dependency>
   <groupId>org.gurux</groupId>
   <artifactId>gurux.sms</artifactId>
   <version>1.0.3</version>
 </dependency>
+```
 
 Note!
 It's important to listen OnError event. Connection might break and it's the only way to get info from it. 
