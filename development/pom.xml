@@ -2,7 +2,7 @@
  <modelVersion>4.0.0</modelVersion>
  <groupId>org.gurux</groupId>
  <artifactId>gurux.sms</artifactId>
- <version>1.0.5</version>
+ <version>1.0.6</version>
  <packaging>jar</packaging>  
  <name>gurux.sms.java</name>
  <url>http://www.gurux.org</url>
