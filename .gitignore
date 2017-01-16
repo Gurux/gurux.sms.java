@@ -219,3 +219,4 @@ src/main/resources/.svn/wc.db
 src/main/resources/.svn/pristine/14/14d50b56d3ea2582af576d9bae322e2c9bc3559e.svn-base
 *.svn-base
 development/src/main/resources/.svn/wc.db
+*.db

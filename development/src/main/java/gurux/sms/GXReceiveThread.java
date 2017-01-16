@@ -55,10 +55,6 @@ class GXReceiveThread extends Thread {
      */
     private GXSMS parentMedia;
     /**
-     * Buffer position.
-     */
-    private int bufferPosition = 0;
-    /**
      * Bytes received.
      */
     private long bytesReceived = 0;
@@ -75,7 +71,6 @@ class GXReceiveThread extends Thread {
         super("GXTerminal " + new Long(hComPort).toString());
         comPort = hComPort;
         parentMedia = parent;
-        bufferPosition = 0;
     }
 
     /**
@@ -115,7 +110,7 @@ class GXReceiveThread extends Thread {
                     for (Object eop : (Object[]) parentMedia.getEop()) {
                         totalCount = GXSynchronousMediaBase.indexOf(buffer,
                                 GXSynchronousMediaBase.getAsByteArray(eop),
-                                bufferPosition - len, bufferPosition);
+                                0, len);
                         if (totalCount != -1) {
                             break;
                         }
@@ -124,7 +119,7 @@ class GXReceiveThread extends Thread {
                     totalCount = GXSynchronousMediaBase.indexOf(buffer,
                             GXSynchronousMediaBase
                                     .getAsByteArray(parentMedia.getEop()),
-                            bufferPosition - len, bufferPosition);
+                            0, len);
                 }
             }
             if (totalCount != -1) {
