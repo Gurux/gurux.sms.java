@@ -42,7 +42,6 @@ import gurux.common.GXSynchronousMediaBase;
  * Receive thread listens serial port and sends received data to the listeners.
  * 
  * @author Gurux Ltd.
- *
  */
 class GXReceiveThread extends Thread {
 
@@ -103,22 +102,22 @@ class GXReceiveThread extends Thread {
         bytesReceived += len;
         int totalCount = 0;
         synchronized (parentMedia.getSyncBase().getSync()) {
-            parentMedia.getSyncBase().appendData(buffer, bufferPosition, len);
+            parentMedia.getSyncBase().appendData(buffer, 0, len);
             // Search end of packet if given.
             if (parentMedia.getEop() != null) {
                 if (parentMedia.getEop() instanceof Array) {
                     for (Object eop : (Object[]) parentMedia.getEop()) {
                         totalCount = GXSynchronousMediaBase.indexOf(buffer,
-                                GXSynchronousMediaBase.getAsByteArray(eop),
-                                0, len);
+                                GXSynchronousMediaBase.getAsByteArray(eop), 0,
+                                len);
                         if (totalCount != -1) {
                             break;
                         }
                     }
                 } else {
                     totalCount = GXSynchronousMediaBase.indexOf(buffer,
-                            GXSynchronousMediaBase
-                                    .getAsByteArray(parentMedia.getEop()),
+                            GXSynchronousMediaBase.getAsByteArray(
+                                    parentMedia.getEop()),
                             0, len);
                 }
             }
