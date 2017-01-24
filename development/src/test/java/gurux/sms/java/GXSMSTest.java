@@ -1,5 +1,7 @@
 package gurux.sms.java;
 
+import gurux.io.Parity;
+import gurux.io.StopBits;
 import gurux.sms.GXSMS;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -31,5 +33,24 @@ public class GXSMSTest extends TestCase {
      */
     public final void testNativeLibrary() {
         GXSMS.getPortNames();
+    }
+
+    /**
+     * Settings test.
+     */
+    public final void testSettings() {
+        String nl = System.getProperty("line.separator");
+        try (GXSMS serial =
+                new GXSMS("COM1", 300, 7, Parity.EVEN, StopBits.ONE)) {
+            serial.setPhoneNumber("+358 3 265 1244");
+            String expected = "<Number>+358 3 265 1244</Number>" + nl
+                    + "<Port>COM1</Port>" + nl + "<BaudRate>300</BaudRate>" + nl
+                    + "<Parity>2</Parity>" + nl + "<DataBits>7</DataBits>" + nl;
+            String actual = serial.getSettings();
+            assertEquals(expected, actual);
+            try (GXSMS serial1 = new GXSMS()) {
+                serial1.setSettings(actual);
+            }
+        }
     }
 }

@@ -37,6 +37,7 @@ package gurux.sms;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -44,6 +45,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import gurux.common.GXSync;
 import gurux.common.GXSynchronousMediaBase;
@@ -251,6 +259,35 @@ public class GXSMS implements IGXMedia, AutoCloseable {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param port
+     *            Serial port.
+     * @param baudRateValue
+     *            Baud rate.
+     * @param dataBitsValue
+     *            Data bits.
+     * @param parityValue
+     *            Parity.
+     * @param stopBitsValue
+     *            Stop bits.
+     */
+    public GXSMS(final String port, final int baudRateValue,
+            final int dataBitsValue, final Parity parityValue,
+            final StopBits stopBitsValue) {
+        phoneNumber = "";
+        initialize();
+        readBufferSize = DEFUALT_READ_BUFFER_SIZE;
+        syncBase = new GXSynchronousMediaBase(readBufferSize);
+        setConfigurableSettings(AvailableMediaSettings.ALL.getValue());
+        setPortName(port);
+        setBaudRate(baudRateValue);
+        setDataBits(dataBitsValue);
+        setParity(parityValue);
+        setStopBits(stopBitsValue);
+    }
+
+    /**
      * Returns synchronous class used to communicate synchronously.
      * 
      * @return Synchronous class.
@@ -377,7 +414,6 @@ public class GXSMS implements IGXMedia, AutoCloseable {
     }
 
     /**
-     * 
      * Get baud rates supported by given serial port.
      * 
      * @param portName
@@ -1403,13 +1439,139 @@ public class GXSMS implements IGXMedia, AutoCloseable {
 
     @Override
     public final String getSettings() {
-        return null;
-        // TODO:
+        StringBuilder sb = new StringBuilder();
+        String nl = System.getProperty("line.separator");
+        if (pin != null && !pin.isEmpty()) {
+            sb.append("<PIN>");
+            sb.append(pin);
+            sb.append("</PIN>");
+            sb.append(nl);
+        }
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            sb.append("<Number>");
+            sb.append(phoneNumber);
+            sb.append("</Number>");
+            sb.append(nl);
+        }
+        if (checkInterval != 0) {
+            sb.append("<Interval>");
+            sb.append(checkInterval);
+            sb.append("</Interval>");
+            sb.append(nl);
+        }
+        if (portName != null && !portName.isEmpty()) {
+            sb.append("<Port>");
+            sb.append(portName);
+            sb.append("</Port>");
+            sb.append(nl);
+        }
+        if (baudRate != DEFAULT_BAUD_RATE) {
+            sb.append("<BaudRate>");
+            sb.append(String.valueOf(baudRate));
+            sb.append("</BaudRate>");
+            sb.append(nl);
+        }
+        if (stopBits != StopBits.ONE) {
+            sb.append("<StopBits>");
+            sb.append(String.valueOf(stopBits.ordinal()));
+            sb.append("</StopBits>");
+            sb.append(nl);
+        }
+        if (parity != Parity.NONE) {
+            sb.append("<Parity>");
+            sb.append(String.valueOf(parity.ordinal()));
+            sb.append("</Parity>");
+            sb.append(nl);
+        }
+        if (dataBits != DEFAULT_DATA_BITS) {
+            sb.append("<DataBits>");
+            sb.append(String.valueOf(dataBits));
+            sb.append("</DataBits>");
+            sb.append(nl);
+        }
+        if (initializeCommands != null && initializeCommands.length != 0) {
+            sb.append("<Init>");
+            for (String it : initializeCommands) {
+                sb.append(it);
+                sb.append(';');
+            }
+            // Remove last ;
+            sb.setLength(sb.length() - 1);
+            sb.append("</Init>");
+            sb.append(nl);
+        }
+        return sb.toString();
     }
 
     @Override
     public final void setSettings(final String value) {
-        // TODO:
+        if (value != null && !value.isEmpty()) {
+            try {
+                DocumentBuilderFactory factory =
+                        DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                StringBuilder sb = new StringBuilder();
+                if (value.startsWith("<?xml version=\"1.0\"?>")) {
+                    sb.append(value);
+                } else {
+                    String nl = System.getProperty("line.separator");
+                    sb.append("<?xml version=\"1.0\"?>\r\n");
+                    sb.append(nl);
+                    sb.append("<Net>");
+                    sb.append(value);
+                    sb.append(nl);
+                    sb.append("</Net>");
+                }
+                InputSource is =
+                        new InputSource(new StringReader(sb.toString()));
+                Document doc = builder.parse(is);
+                doc.getDocumentElement().normalize();
+                NodeList nList = doc.getChildNodes();
+                if (nList.getLength() != 1) {
+                    throw new IllegalArgumentException(
+                            "Invalid XML root node.");
+                }
+                nList = nList.item(0).getChildNodes();
+                for (int pos = 0; pos < nList.getLength(); ++pos) {
+                    Node it = nList.item(pos);
+                    if (it.getNodeType() == Node.ELEMENT_NODE) {
+                        if ("Port".equalsIgnoreCase(it.getNodeName())) {
+                            setPortName(it.getFirstChild().getNodeValue());
+                        } else if ("BaudRate"
+                                .equalsIgnoreCase(it.getNodeName())) {
+                            setBaudRate(Integer.parseInt(
+                                    it.getFirstChild().getNodeValue()));
+                        } else if ("StopBits"
+                                .equalsIgnoreCase(it.getNodeName())) {
+                            setStopBits(StopBits.values()[Integer.parseInt(
+                                    it.getFirstChild().getNodeValue())]);
+                        } else if ("Parity"
+                                .equalsIgnoreCase(it.getNodeName())) {
+                            setParity(Parity.values()[Integer.parseInt(
+                                    it.getFirstChild().getNodeValue())]);
+                        } else if ("DataBits"
+                                .equalsIgnoreCase(it.getNodeName())) {
+                            setDataBits(Integer.parseInt(
+                                    it.getFirstChild().getNodeValue()));
+                        } else if ("Number"
+                                .equalsIgnoreCase(it.getNodeName())) {
+                            setPhoneNumber(it.getFirstChild().getNodeValue());
+                        } else if ("PIN".equalsIgnoreCase(it.getNodeName())) {
+                            setPINCode(it.getFirstChild().getNodeValue());
+                        } else if ("Interval"
+                                .equalsIgnoreCase(it.getNodeName())) {
+                            setSMSCheckInterval(Integer.parseInt(
+                                    it.getFirstChild().getNodeValue()));
+                        } else if ("Init".equalsIgnoreCase(it.getNodeName())) {
+                            initializeCommands = it.getFirstChild()
+                                    .getNodeValue().split("[;]");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -1525,7 +1687,6 @@ public class GXSMS implements IGXMedia, AutoCloseable {
 
     /**
      * Gets are messages removed after read from the SIM or phone memory.
-     * 
      * Default is false.
      * 
      * @return Is auto delete used.
@@ -1536,7 +1697,6 @@ public class GXSMS implements IGXMedia, AutoCloseable {
 
     /**
      * Sets are messages removed after read from the SIM or phone memory.
-     * 
      * Default is false.
      * 
      * @param value
