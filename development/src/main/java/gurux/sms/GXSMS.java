@@ -1459,7 +1459,7 @@ public class GXSMS implements IGXMedia, AutoCloseable {
         }
         if (baudRate != BaudRate.BAUD_RATE_9600) {
             sb.append("<BaudRate>");
-            sb.append(String.valueOf(baudRate));
+            sb.append(String.valueOf(baudRate.getValue()));
             sb.append("</BaudRate>");
             sb.append(nl);
         }
