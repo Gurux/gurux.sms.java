@@ -222,3 +222,4 @@ development/src/main/resources/.svn/wc.db
 *.db
 *.db
 development/src/main/resources/.svn/wc.db-journal
+*.db

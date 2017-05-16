@@ -66,7 +66,7 @@ public class GuruxSmsExampleJava extends javax.swing.JFrame
     Timer StatusTimer;
 
     @Override
-    public void onError(Object sender, RuntimeException ex) {
+    public void onError(Object sender, Exception ex) {
         try {
             sms.close();
             JOptionPane.showMessageDialog(this, ex.getMessage());

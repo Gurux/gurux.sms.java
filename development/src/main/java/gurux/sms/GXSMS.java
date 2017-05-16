@@ -372,29 +372,37 @@ public class GXSMS implements IGXMedia, AutoCloseable {
                     path = "win64";
                 }
             } else if (isUnix(os)) {
-                if (is32Bit) {
-                    path = "linux86";
+                if (System.getProperty("os.arch").indexOf("arm") != -1) {
+                    if (is32Bit) {
+                        path = "arm32";
+                    } else {
+                        path = "arm64";
+                    }
                 } else {
-                    path = "linux64";
+                    if (is32Bit) {
+                        path = "linux86";
+                    } else {
+                        path = "linux64";
+                    }
                 }
             } else {
                 throw new RuntimeException("Invald operating system. " + os);
             }
             File file;
             try {
-                file = File.createTempFile("gurux.serial.java", ".dll");
+                file = File.createTempFile("gurux.sms.java", ".dll");
             } catch (IOException e1) {
                 throw new RuntimeException(
-                        "Failed to load file. " + path + "/gurux.serial.java");
+                        "Failed to load file. " + path + "/gurux.sms.java");
             }
             try (InputStream in = GXSMS.class.getResourceAsStream("/" + path
-                    + "/" + System.mapLibraryName("gurux.serial.java"))) {
+                    + "/" + System.mapLibraryName("gurux.sms.java"))) {
                 Files.copy(in, file.toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
                 System.load(file.getAbsolutePath());
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load file. " + path
-                        + "/gurux.serial.java" + e.toString());
+                        + "/gurux.sms.java" + e.toString());
             }
         }
     }
