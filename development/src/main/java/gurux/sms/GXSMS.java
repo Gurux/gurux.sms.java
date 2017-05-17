@@ -390,19 +390,19 @@ public class GXSMS implements IGXMedia, AutoCloseable {
             }
             File file;
             try {
-                file = File.createTempFile("gurux.sms.java", ".dll");
+                file = File.createTempFile("gurux.serial.java", ".dll");
             } catch (IOException e1) {
                 throw new RuntimeException(
-                        "Failed to load file. " + path + "/gurux.sms.java");
+                        "Failed to load file. " + path + "/gurux.serial.java");
             }
             try (InputStream in = GXSMS.class.getResourceAsStream("/" + path
-                    + "/" + System.mapLibraryName("gurux.sms.java"))) {
+                    + "/" + System.mapLibraryName("gurux.serial.java"))) {
                 Files.copy(in, file.toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
                 System.load(file.getAbsolutePath());
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load file. " + path
-                        + "/gurux.sms.java" + e.toString());
+                        + "/gurux.serial.java" + e.toString());
             }
         }
     }
