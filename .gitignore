@@ -224,3 +224,4 @@ development/src/main/resources/.svn/wc.db
 development/src/main/resources/.svn/wc.db-journal
 *.db
 development/pom.xml.releaseBackup
+development/release.properties
