@@ -225,3 +225,4 @@ development/src/main/resources/.svn/wc.db-journal
 *.db
 development/pom.xml.releaseBackup
 development/release.properties
+gurux.sms.example.java/dependency-reduced-pom.xml

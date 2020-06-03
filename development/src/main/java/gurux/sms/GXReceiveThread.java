@@ -67,7 +67,7 @@ class GXReceiveThread extends Thread {
      *            Handle for the serial port.
      */
     GXReceiveThread(final GXSMS parent, final long hComPort) {
-        super("GXTerminal " + new Long(hComPort).toString());
+        super("GXSMS " + String.valueOf(hComPort));
         comPort = hComPort;
         parentMedia = parent;
     }
