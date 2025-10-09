@@ -2,33 +2,33 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.gurux</groupId>
   <artifactId>gurux.sms</artifactId>
-  <version>1.0.22-SNAPSHOT</version>
+  <version>1.0.21-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>gurux.sms.java</name>
-  <url>http://www.gurux.org</url>
+  <url>http://www.gurux.fi</url>
   <description>gurux.sms.java package implements class that can be used to send and receive Short Messages (SMS) using phone or modem.</description>
   <developers>
     <developer>
       <id>Gurux</id>
       <name>Gurux Ltd.</name>
-      <email>gurux@gurux.org</email>
-      <url>http://www.gurux.org</url>
+      <email>gurux@gurux.fi</email>
+      <url>http://www.gurux.fi</url>
       <organization>Gurux Ltd.</organization>
-      <organizationUrl>http://www.gurux.org</organizationUrl>
+      <organizationUrl>http://www.gurux.fi</organizationUrl>
       <roles>
         <role>architect</role>
         <role>developer</role>
       </roles>
       <timezone>Europe/Helsinki</timezone>
       <properties>
-        <picUrl>http://www.gurux.org/images/gurux-avatar.png</picUrl>
+        <picUrl>http://www.gurux.fi/images/gurux-avatar.png</picUrl>
       </properties>
     </developer>
   </developers>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <scm>
     <connection>scm:git:https://github.com/gurux/gurux.sms.java.git</connection>
@@ -55,7 +55,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.12.0</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -67,7 +67,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -80,13 +80,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>3.0.0-M4</version>
+        <version>3.1.1</version>
         <configuration>
           <tagNameFormat>v@{project.version}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <releaseProfiles>releases</releaseProfiles>
         </configuration>
-      </plugin>
+      </plugin>     
     </plugins>
   </build>
   <profiles>
@@ -98,7 +98,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
+            <version>3.2.8</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -114,16 +114,16 @@
           </plugin>
           <!-- Deployment and release -->
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.8</version>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>nexus-releases</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
-            </configuration>
-          </plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.9.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <publishingServerId>central</publishingServerId>
+            <autoPublish>true</autoPublish>
+            <waitUntil>published</waitUntil>
+          </configuration>
+        </plugin>
         </plugins>
       </build>
     </profile>
@@ -132,7 +132,7 @@
     <dependency>
       <groupId>org.gurux</groupId>
       <artifactId>gurux.common</artifactId>
-      <version>1.0.17</version>
+      <version>1.0.18</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -148,7 +148,7 @@
     </license>
   </licenses>
   <organization>
-    <url>http://www.gurux.org</url>
+    <url>http://www.gurux.fi</url>
     <name>Gurux Ltd.</name>
   </organization>
 </project>
